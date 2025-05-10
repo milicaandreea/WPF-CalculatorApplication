@@ -1,0 +1,232 @@
+﻿<Window x:Class="Calculator.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calculator" xmlns:viewmodels="clr-namespace:Calculator.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+        mc:Ignorable="d"
+        Title="My Calculator"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        Height="600" Width="500">
+
+    <Window.Resources>
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="#FFF0F0F0"/>
+            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="8"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" 
+                                        Property="Background" 
+                                        Value="#FFE0E0E0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border"
+                                        Property="Background"
+                                        Value="#FFD0D0D0"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border"
+                                        Property="Opacity"
+                                        Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Background="#FFFFF1FC" Foreground="#FFC71CD7">
+            <MenuItem Header="File">
+                <MenuItem Header="Cut" Command="{Binding CutCommand}" Background="#FFFFF1FC"/>
+                <MenuItem Header="Copy" Command="{Binding CopyCommand}" Background="#FFFFF1FC"/>
+                <MenuItem Header="Paste" Command="{Binding PasteCommand}" Background="#FFFFF1FC"/>
+                <MenuItem Header="Digit Grouping" Background="#FFFFF1FC">
+                    <MenuItem Header="Toggle" Command="{Binding ToggleDigitGroupingCommand}" Background="#FFFFF1FC"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help" Background="#FFFFF1FC">
+                <MenuItem Header="About" Click="AboutMenu_Click" Background="#FFFFF1FC"/>
+            </MenuItem>
+            <MenuItem Header="Mode" Background="#FFFFF1FC">
+                <MenuItem Header="Switch to Programmer" Command="{Binding ToggleProgrammerModeCommand}" Background="#FFFFF1FC"/>
+            </MenuItem>
+
+            <MenuItem Header="Base" Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}" Background="#FFFFF1FC">
+                <MenuItem Header="BIN" Command="{Binding SetBaseCommand}" CommandParameter="BIN" Background="#FFFFF1FC"/>
+                <MenuItem Header="OCT" Command="{Binding SetBaseCommand}" CommandParameter="OCT" Background="#FFFFF1FC"/>
+                <MenuItem Header="DEC" Command="{Binding SetBaseCommand}" CommandParameter="DEC" Background="#FFFFF1FC"/>
+                <MenuItem Header="HEX" Command="{Binding SetBaseCommand}" CommandParameter="HEX" Background="#FFFFF1FC"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1" Background="#FFFFF1FC">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding Display}"
+                       FontSize="45"
+                       Foreground="#FFC71CD7"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="10"
+                       Grid.Row="0"/>
+            <Grid Height="53" Width="467" RenderTransformOrigin="0.5,0.442" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Content="MC" Grid.Column="0"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemoryClearCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="25" Cursor="Hand"/>
+                <Button Content="MR" Grid.Column="1"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemoryRecallCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" BorderBrush="#FFC71CD7" Foreground="#FF9F13B2" Cursor="Hand" FontSize="25"/>
+                <Button Content="MS" Grid.Column="2"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemorySaveCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="25" Cursor="Hand"/>
+                <Button Content="M+" Grid.Column="3"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemoryAddCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="25" Cursor="Hand"/>
+                <Button Content="M-" Grid.Column="4"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemorySubtractCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="25" Cursor="Hand"/>
+                <Button Content="M&gt;" Grid.Column="5"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding MemoryShowStackCommand}" Margin="4,4,4,4" Background="#FFFAF9C5" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="25" Cursor="Hand"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,3,0,0" Background="#FF72F4FC" Height="Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="HexColumn" Width="25*">
+                        <ColumnDefinition.Style>
+                            <Style TargetType="ColumnDefinition">
+                                <Setter Property="Width" Value="*"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsProgrammerMode}" Value="False">
+                                        <Setter Property="Width" Value="0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ColumnDefinition.Style>
+                    </ColumnDefinition>
+
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="25*"/>
+                    <ColumnDefinition Width="13*"/>
+                    <ColumnDefinition Width="12*"/>
+                    <ColumnDefinition Width="25*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Button Content="A"
+                    Grid.Row="0" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="A" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" FontFamily="Segoe UI" Cursor="Hand"/>
+                <Button Content="B"
+                    Grid.Row="1" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="B" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="C"
+                    Grid.Row="2" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="C" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="D"
+                    Grid.Row="3" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    CommandParameter="D"
+                    Command="{Binding DigitCommand}" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="E"
+                    Grid.Row="4" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    CommandParameter="E"
+                    Command="{Binding DigitCommand}" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="F"
+                    Grid.Row="5" Grid.Column="0"
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Visibility="{Binding IsProgrammerMode, Converter={StaticResource ProgrammerVisibilityConverter}}"
+                    CommandParameter="F"
+                    Command="{Binding DigitCommand}" Margin="4,4,4,4" Background="#FFC7F7FA" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+                <Button Content="%" Command="{Binding UnaryOperatorCommand}" CommandParameter="%" Grid.Row="0" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" FontSize="35" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" Cursor="Hand"/>
+                <Button Content="CE" Command="{Binding ClearEntryCommand}" Grid.Row="0" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="C" Command="{Binding ClearCommand}" Grid.Row="0" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="⌫" Command="{Binding BackspaceCommand}" Grid.Row="0" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+                <Button Content="1/x" Command="{Binding UnaryOperatorCommand}" CommandParameter="1/x" Grid.Row="1" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="x²" Command="{Binding UnaryOperatorCommand}" CommandParameter="x²" Grid.Row="1" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="√" Command="{Binding UnaryOperatorCommand}" CommandParameter="√" Grid.Row="1" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="÷" Command="{Binding OperatorCommand}" CommandParameter="/" Grid.Row="1" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+                <Button Content="7" Command="{Binding DigitCommand}" CommandParameter="7" Grid.Row="2" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="8" Command="{Binding DigitCommand}" CommandParameter="8" Grid.Row="2" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="9" Command="{Binding DigitCommand}" CommandParameter="9" Grid.Row="2" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="×" Command="{Binding OperatorCommand}" CommandParameter="*" Grid.Row="2" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+
+                <Button Content="4" Command="{Binding DigitCommand}" CommandParameter="4" Grid.Row="3" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="5" Command="{Binding DigitCommand}" CommandParameter="5" Grid.Row="3" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="6" Command="{Binding DigitCommand}" CommandParameter="6" Grid.Row="3" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="-" Command="{Binding OperatorCommand}" CommandParameter="-" Grid.Row="3" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+                <Button Content="1" Command="{Binding DigitCommand}" CommandParameter="1" Grid.Row="4" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="2" Command="{Binding DigitCommand}" CommandParameter="2" Grid.Row="4" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="3" Command="{Binding DigitCommand}" CommandParameter="3" Grid.Row="4" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFFDDBF6" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="+" Command="{Binding OperatorCommand}" CommandParameter="+" Grid.Row="4" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+
+
+                <Button Content="+/-" Command="{Binding UnaryOperatorCommand}" CommandParameter="+/-" Grid.Row="5" Grid.Column="1" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFEBCAFF" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="0" Command="{Binding DigitCommand}" CommandParameter="0" Grid.Row="5" Grid.Column="2" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFDDBF6" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="," Command="{Binding DigitCommand}" CommandParameter="." Grid.Row="5" Grid.Column="3" Style="{StaticResource RoundedButtonStyle}" Grid.ColumnSpan="2" Margin="4,4,4,4" Background="#FFEBCAFF" Foreground="#FFC71CD7" BorderBrush="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+                <Button Content="=" Command="{Binding EqualCommand}" Grid.Row="5" Grid.Column="5" Style="{StaticResource RoundedButtonStyle}" Margin="4,4,4,4" Background="#FFFAF9C5" BorderBrush="#FFC71CD7" Foreground="#FFC71CD7" FontSize="35" Cursor="Hand"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
